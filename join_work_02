@@ -1,0 +1,33 @@
+SELECT 
+distinct(t1.RMS),
+t1.TYPE,
+t1.ENVIRONMENT,
+--t1.ean,
+--t1.name,
+--t1.trademark,
+--t1.store_id,
+FROM
+(
+SELECT
+distinct(sort.RMS) RMS, sort.TYPE, sort.ENVIRONMENT, assort.ean, assort.name, assort.trademark, assort.store_id
+FROM 
+`br-digitalcomm-prod.db_inventory_price.tbl_sortimento` as sort
+JOIN
+br-digitalcomm-prod.db_inventory_price.tbl_assortment_spanner as assort
+on
+sort.RMS = assort.rms
+WHERE 
+--assort.store_id = 103 and 
+sort.ENVIRONMENT in ("NFOOD_CR", "NFOOD_SFS","IFOOD_MERCADO", "RAPPI_FOOD", "FOOD_RAPPI")
+) as t1
+
+LEFT JOIN
+`br-digitalcomm-prod.db_inventory_price.tbl_zerar_estoque` as t2
+ON
+CAST(t1.RMS AS INT64) = t2.RMS
+WHERE
+t2.RMS IS NULL
+and
+t1.RMS in (
+  '3872785'
+)
